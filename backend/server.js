@@ -63,12 +63,9 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import dotenv from "dotenv";
 import { sql } from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
-
-//issue with dotenv import and usage, so removed it for now
-// dotenv.config();
+import { aj } from "./lib/arcjet.js";
 
 const app = express();
 const PORT = 3030;
@@ -77,6 +74,44 @@ app.use(express.json());
 app.use(cors());
 app.use(helmet());
 app.use(morgan("dev"));
+
+// apply Arcjet middleware to all routes
+
+app.use(async(req, res, next) => {
+    try{
+        const decision=await aj.protect(req,{
+            requested:1 
+
+        });
+        if(decision.isDenied()){
+            if(decision.reason.isRateLimit()){
+                res.status(429).json({message:"Too many requests. Please try again later."});
+            }
+            else if(decision.reason.isBot()){
+                res.status(403).json({message:"Access denied. Bot traffic is not allowed."});   
+
+            
+            }
+            else{
+                res.status(403).json({message:"forbidden. Access denied."});
+            }
+
+            return ;
+        }
+
+        // check for spoofed bots
+        if(decision.results.some((result) => result.reason.isBot() && result.reason.isSpoofed())){
+            res.status(403).json({message:"Access denied. Spoofed bot traffic is not allowed."});
+            return ;
+        }
+
+        next();
+    }
+    catch(error){
+        console.error("Error in Arcjet middleware:", error);
+        next(error);
+    }
+})
 
 app.get("/", (req, res) => {
     res.json({

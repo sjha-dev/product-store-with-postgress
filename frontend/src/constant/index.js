@@ -1,0 +1,15 @@
+export const THEMES = [
+	{ name: 'Pastel', value: 'pastel', colors: ['#f9d5e5', '#eeeeee', '#d5e5f9'] },
+	{ name: 'Retro', value: 'retro', colors: ['#e9e5b5', '#e58f87', '#a9c0c8'] },
+	{ name: 'Coffee', value: 'coffee', colors: ['#33251f', '#9a7655', '#b6a999'] },
+	{ name: 'Forest', value: 'forest', colors: ['#13251a', '#1e6347', '#7bbf9b'] },
+	{ name: 'Cyberpunk', value: 'cyberpunk', colors: ['#ff00c8', '#00e5ff', '#ff668c'] },
+	{ name: 'Synthwave', value: 'synthwave', colors: ['#1f1d65', '#ed1bce', '#00d5f5'] },
+	{ name: 'Luxury', value: 'luxury', colors: ['#b8860b', '#f5deb3', '#282828'] },
+	{ name: 'Autumn', value: 'autumn', colors: ['#f0d1b5', '#d86b24', '#a83b0b'] },
+	{ name: 'Valentine', value: 'valentine', colors: ['#e96b8c', '#f3a1b5', '#ffccda'] },
+	{ name: 'Aqua', value: 'aqua', colors: ['#16c3ae', '#16a8d6', '#1686c3'] },
+	{ name: 'Business', value: 'business', colors: ['#075985', '#0ea5e9', '#94a3b8'] },
+	{ name: 'Night', value: 'night', colors: ['#0f172a', '#334155', '#94a3b8'] },
+	{ name: 'Dracula', value: 'dracula', colors: ['#282a36', '#bd93f9', '#ff79c6'] },
+]

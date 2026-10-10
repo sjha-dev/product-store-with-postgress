@@ -33,32 +33,7 @@ The application also includes a theme selection system that allows users to cust
 
 The application is organized into independent modules for the storefront, product API, request security, and theme management.
 
-```text
-Product Store
-│
-├── Frontend (React.js)
-│   ├── main.jsx
-│   ├── App.jsx
-│   ├── HomePage.jsx
-│   ├── Navbar.jsx
-│   ├── ProductPage.jsx
-│   └── Theme Selection
-│       ├── ThemeSelector.jsx
-│       ├── useThemeStore.js
-│       └── Theme Options
-│
-├── Backend (Node.js + Express.js)
-│   ├── server.js
-│   ├── productRoutes.js
-│   ├── Product Controller
-│   └── db.js
-│
-├── Request Security
-│   └── arcjet.js
-│
-└── Database
-    └── Neon PostgreSQL
-```
+
 
 ## How It Works
 

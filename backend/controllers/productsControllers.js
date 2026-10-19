@@ -1,5 +1,5 @@
 import { sql } from "../config/db.js";
-
+import { createNotification } from "./notificationsController.js";
 
 
 export const getProducts =async (req,res)=>{
@@ -32,6 +32,7 @@ export const createProducts=async (req,res)=>{
         RETURNING *`;
 
         console.log("new product created",newProduct);
+        await createNotification(`Added product "${name}"`, newProduct[0].id);
         res.status(201).json({success:true , data:newProduct[0]});
 
     }catch(error){
@@ -62,6 +63,14 @@ export const updateProduct=async (req,res)=>{
     const {name,price,image}=req.body;
 
     try{
+        const existingProduct = await sql`
+        SELECT name, price, image FROM products
+        WHERE id=${id}`;
+
+        if(existingProduct.length===0){
+            return res.status(404).json({success:false , message:"Product not found"});
+        }
+
         const updatedProduct=await sql`
         UPDATE products
         SET name=${name}, price=${price}, image=${image}
@@ -72,6 +81,12 @@ export const updateProduct=async (req,res)=>{
             return res.status(404).json({success:false , message:"Product not found"});
         }
 
+        const changedFields = [];
+        if(existingProduct[0].name !== name) changedFields.push("name");
+        if(Number(existingProduct[0].price) !== Number(price)) changedFields.push("price");
+        if(existingProduct[0].image !== image) changedFields.push("image");
+        const changes = changedFields.length > 0 ? ` (${changedFields.join(", ")} changed)` : "";
+        await createNotification(`Updated product "${updatedProduct[0].name}"${changes}`, updatedProduct[0].id);
         res.status(200).json({success:true , data:updatedProduct[0]});
 
     }catch(error){
@@ -93,6 +108,7 @@ export const deleteProduct=async (req,res)=>{
             return res.status(404).json({success:false , message:"Product not found"});
         }
 
+        await createNotification(`Deleted product "${deletedProduct[0].name}"`, deletedProduct[0].id);
         res.status(200).json({success:true , data:deletedProduct[0]});
 
     }catch(error){

@@ -65,6 +65,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { sql } from "./config/db.js";
 import productRoutes from "./routes/productRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import { aj } from "./lib/arcjet.js";
 
 const app = express();
@@ -78,6 +79,11 @@ app.use(morgan("dev"));
 // apply Arcjet middleware to all routes
 
 app.use(async(req, res, next) => {
+    if (process.env.NODE_ENV !== "production") {
+        next();
+        return;
+    }
+
     try{
         const decision=await aj.protect(req,{
             requested:1 
@@ -130,6 +136,14 @@ async function initDB() {
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `;
+        await sql`
+            CREATE TABLE IF NOT EXISTS notifications (
+                id SERIAL PRIMARY KEY,
+                message VARCHAR(500) NOT NULL,
+                product_id INTEGER,
+                created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+            )
+        `;
 
         console.log("Database initialized successfully.");
     } catch (error) {
@@ -140,6 +154,7 @@ async function initDB() {
 initDB();
 
 app.use("/api/products", productRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server running at http://localhost:${PORT}`);
